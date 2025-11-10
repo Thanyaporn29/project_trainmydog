@@ -1,10 +1,7 @@
-# trainmydog/forms.py
 from django import forms
-from .models import TrainerApplication
 from django.core.exceptions import ValidationError
+from .models import TrainerApplication
 
-
-# Trainer Application
 class TrainerApplicationForm(forms.ModelForm):
     certificate = forms.FileField(
         label="แนบไฟล์เกียรติบัตร/ผลงาน (ไฟล์เดียว)",
@@ -24,7 +21,9 @@ class TrainerApplicationForm(forms.ModelForm):
             "intro": "แนะนำตัว/เพิ่มเติม",
             "portfolio_link": "ลิงก์ผลงาน (ถ้ามี)",
         }
-        widgets = {"intro": forms.Textarea(attrs={"rows": 4})}
+        widgets = {
+            "intro": forms.Textarea(attrs={"rows": 4}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,3 +32,6 @@ class TrainerApplicationForm(forms.ModelForm):
             self.fields[name].widget.attrs.update({"class": common})
         self.fields["intro"].widget.attrs.update({"class": common})
 
+        # ✅ ไม่บังคับกรอก
+        self.fields["intro"].required = False
+        self.fields["portfolio_link"].required = False
