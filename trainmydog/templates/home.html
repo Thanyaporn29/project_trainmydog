@@ -3,7 +3,7 @@
 
 {% block title %}Home • Train My Dog{% endblock %}
 
-{% block content %}
+{% block content %}  
 
 <!-- HERO SECTION -->
 <section class="bg-gradient-to-b from-slate-50 to-slate-100">
@@ -13,6 +13,7 @@
         src="https://images.unsplash.com/photo-1525253013412-55c1a69a5738?q=80&w=1600&auto=format&fit=crop"
         alt="Dog training hero"
         class="w-full h-[280px] md:h-[420px] object-cover">
+
       <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
 
       <div class="absolute inset-0 p-6 md:p-10 flex flex-col justify-center text-white">
@@ -21,32 +22,106 @@
             TRAIN YOUR DOG<br>TRANSFORM YOUR LIFE
           </h1>
           <p class="mt-4 text-white/90 max-w-xl">
-            ไม่ว่าจะฝึกพื้นฐาน แก้พฤติกรรม หรือเพิ่มสมาธิ—เราออกแบบคอร์สให้เหมาะกับน้องหมาและผู้ดูแลทุกคน
+            ไม่ว่าจะฝึกพื้นฐาน แก้พฤติกรรม หรือเพิ่มสมาธิ—เราออกแบบคอร์สให้เหมาะกับทุกคน
           </p>
+
           <div class="mt-6">
-            <a href="{% url 'trainmydog:home' %}"
+            <a href="#courses-section"
                class="inline-flex items-center gap-2 bg-amber-400 text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-amber-300 transition shadow">
               ดูคอร์สทั้งหมด
-              <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h9.69l-3.22-3.22a.75.75 0 1 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd"/>
-              </svg>
             </a>
           </div>
+
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- หัวข้อ “คอร์สทั้งหมด” -->
-<section class="py-10 bg-slate-100">
+
+<!-- SECTION: คอร์สทั้งหมด -->
+<section id="courses-section" class="py-10 bg-slate-100">
   <div class="max-w-7xl mx-auto px-4">
-    <div class="flex items-center justify-between">
+
+    <div class="flex items-center justify-between mb-6">
       <h3 class="text-xl md:text-2xl font-bold">คอร์สทั้งหมด</h3>
       <span class="text-sm text-slate-500">
         {% if courses %}พบ {{ courses|length }} คอร์ส{% else %}พบ 0 คอร์ส{% endif %}
       </span>
     </div>
+
+    {% if courses %}
+      {# ✅ ใช้ grid แบบเดิม: card เล็ก 320px-ish ตามภาพ #}
+      <div class="grid gap-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+
+        {% for c in courses %}
+          <article class="bg-white rounded-2xl shadow ring-1 ring-slate-200 overflow-hidden flex flex-col">
+
+            {% if c.cover_image %}
+              <img src="{{ c.cover_image.url }}" alt="{{ c.title }}" class="h-44 w-full object-cover">
+            {% else %}
+              <div class="h-44 w-full bg-slate-200 grid place-items-center text-slate-500">
+                ไม่มีภาพ
+              </div>
+            {% endif %}
+
+            <div class="p-5 flex-1 flex flex-col gap-3">
+              <h4 class="font-semibold line-clamp-2">{{ c.title }}</h4>
+
+              {% if c.description %}
+                <p class="mt-1 text-sm text-slate-600 line-clamp-2">{{ c.description }}</p>
+              {% endif %}
+
+              <div class="mt-2 text-sm text-slate-600 space-y-1">
+                <div>ชั่วโมงฝึกรวม : {{ c.duration_hr }} ชม.</div>
+                {% if c.location %}
+                  <div class="truncate" title="{{ c.location }}">
+                    สถานที่ : {{ c.location }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="flex items-center justify-between pt-2">
+                <div class="text-emerald-700 font-bold">
+                  ราคา : {{ c.price|floatformat:"2g" }} บาท
+                </div>
+                <a href="{% url 'trainmydog:course_detail' c.pk %}"
+                   class="inline-flex items-center gap-1 text-indigo-700 hover:text-indigo-500">
+                  รายละเอียด →
+                </a>
+              </div>
+
+              <div class="mt-auto pt-4 border-t border-slate-200 flex items-center gap-2">
+                {% if c.trainer.profile.avatar %}
+                  <img src="{{ c.trainer.profile.avatar.url }}"
+                       class="w-8 h-8 rounded-full object-cover" alt="trainer">
+                {% else %}
+                  <div class="w-8 h-8 rounded-full bg-slate-300 grid place-items-center text-white">
+                    {{ c.trainer.first_name|default:c.trainer.username|first|upper }}
+                  </div>
+                {% endif %}
+                <div class="text-sm">
+                  <div class="font-medium leading-none">
+                    {{ c.trainer.first_name }} {{ c.trainer.last_name }}
+                  </div>
+                  <div class="text-slate-500 leading-none text-xs mt-0.5">
+                    ครูฝึกสุนัข
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </article>
+        {% endfor %}
+
+      </div>
+
+    {% else %}
+      <div class="mt-6 rounded-2xl bg-white ring-1 ring-slate-200 p-6 text-center text-slate-500 text-sm">
+        ยังไม่มีคอร์สที่เผยแพร่ในขณะนี้
+      </div>
+    {% endif %}
+
   </div>
 </section>
 

@@ -1,10 +1,11 @@
+{# course/templates/courses/create_course.html #}
 {% extends "base.html" %}
 {% load static %}
 
 {% block title %}{% if mode == 'create' %}สร้างคอร์ส{% else %}แก้ไขคอร์ส{% endif %} • Train My Dog{% endblock %}
 
 {% block content %}
-<main class="max-w-5xl mx-auto px-4 py-8">
+<div class="max-w-5xl mx-auto px-4 py-8">
   <h1 class="text-2xl font-bold text-center mb-6">
     {% if mode == 'create' %}เพิ่มคอร์สฝึกสุนัข{% else %}แก้ไขคอร์ส{% endif %}
   </h1>
@@ -29,90 +30,136 @@
     {{ form.non_field_errors }}
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {# ============ คอลัมน์ซ้าย ============ #}
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.cover_image.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.cover_image.label }}
+          </label>
           <div class="border-2 border-dashed rounded-xl p-4 text-center">
             {{ form.cover_image }}
             <p class="text-xs text-slate-500 mt-2">ไฟล์ภาพ .jpg .png (≤ 5MB)</p>
           </div>
-          {% for err in form.cover_image.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.cover_image.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
 
           {% if mode == 'update' and course and course.cover_image %}
             <div class="mt-3">
-              <img src="{{ course.cover_image.url }}" alt="Current cover" class="w-full max-w-sm rounded-lg ring-1 ring-slate-200">
+              <img src="{{ course.cover_image.url }}"
+                   alt="Current cover"
+                   class="w-full max-w-sm rounded-lg ring-1 ring-slate-200">
             </div>
           {% endif %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.title.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.title.label }}
+          </label>
           {{ form.title }}
-          {% for err in form.title.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.title.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.duration_hr.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.duration_hr.label }}
+          </label>
           {{ form.duration_hr }}
-          {% for err in form.duration_hr.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.duration_hr.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.max_dogs.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.max_dogs.label }}
+          </label>
           {{ form.max_dogs }}
-          {% for err in form.max_dogs.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.max_dogs.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.description.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.description.label }}
+          </label>
           {{ form.description }}
-          {% for err in form.description.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.description.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
       </div>
 
+      {# ============ คอลัมน์ขวา ============ #}
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.price.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.price.label }}
+          </label>
           {{ form.price }}
-          {% for err in form.price.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.price.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.deposit_price.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.deposit_price.label }}
+          </label>
           {{ form.deposit_price }}
-          {% for err in form.deposit_price.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.deposit_price.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.location.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.location.label }}
+          </label>
           {{ form.location }}
-          {% for err in form.location.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.location.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
-        {# เดิมมี schedule_text แต่ในฟอร์มชุดปัจจุบันไม่มีฟิลด์นี้ -> คอมเมนต์กัน error #}
-        {# 
+        {# schedule_text ถูกตัดออกจากฟอร์มแล้ว เลยคอมเมนต์กัน error ไว้ #}
+        {#
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.schedule_text.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.schedule_text.label }}
+          </label>
           {{ form.schedule_text }}
-          {% for err in form.schedule_text.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.schedule_text.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
         #}
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.benefits.label }}</label>
+          <label class="block text-sm font-medium text-slate-700 mb-1">
+            {{ form.benefits.label }}
+          </label>
           {{ form.benefits }}
-          {% for err in form.benefits.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+          {% for err in form.benefits.errors %}
+            <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+          {% endfor %}
         </div>
 
         <div class="mt-4">
           <label class="inline-flex items-center gap-2">
             {{ form.is_published }}
-            <span class="text-sm font-medium text-slate-700">{{ form.fields.is_published.label }}</span>
+            <span class="text-sm font-medium text-slate-700">
+              {{ form.fields.is_published.label }}
+            </span>
           </label>
         </div>
       </div>
 
-      <!-- ฟอร์มเซ็ตรอบสอน -->
+      {# ============ ฟอร์มเซ็ตรอบสอน ============ #}
       <div class="md:col-span-2">
         <h2 class="text-lg font-semibold mt-6 mb-2">รอบที่เปิดสอน (เลือกได้หลายวัน)</h2>
 
@@ -125,23 +172,35 @@
           {% for f in round_formset.forms %}
             <div class="round-item grid grid-cols-1 md:grid-cols-4 gap-4 items-start bg-slate-50 rounded-xl p-4 ring-1 ring-slate-200">
               <div class="md:col-span-2">
-                <div class="block text-sm font-medium text-slate-700 mb-1">{{ f.days.label }}</div>
+                <div class="block text-sm font-medium text-slate-700 mb-1">
+                  {{ f.days.label }}
+                </div>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                   {{ f.days }}
                 </div>
-                {% for err in f.days.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+                {% for err in f.days.errors %}
+                  <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+                {% endfor %}
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">{{ f.start_time.label }}</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                  {{ f.start_time.label }}
+                </label>
                 {{ f.start_time }}
-                {% for err in f.start_time.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+                {% for err in f.start_time.errors %}
+                  <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+                {% endfor %}
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">{{ f.end_time.label }}</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">
+                  {{ f.end_time.label }}
+                </label>
                 {{ f.end_time }}
-                {% for err in f.end_time.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+                {% for err in f.end_time.errors %}
+                  <p class="text-sm text-red-600 mt-1">{{ err }}</p>
+                {% endfor %}
               </div>
 
               <div class="md:col-span-4 flex justify-end gap-3">
@@ -169,12 +228,11 @@
           ต้องการเปิดเพิ่มอีกช่วงเวลา ให้กด “เพิ่มรอบสอน” เพื่อสร้าง <b>รอบ 2</b> แล้วกรอกเวลาชุดใหม่
         </p>
       </div>
-      <!-- ฟอร์มเซ็ตรอบสอน -->
+      {# ============ จบฟอร์มเซ็ตรอบสอน ============ #}
 
       <div class="md:col-span-2 mt-6">
         <div class="flex justify-end gap-5">
-          {# หน้า list คอร์ส: ถ้ายังไม่ได้สร้าง url ให้ใช้ # กัน error ไว้ก่อน #}
-          <a href="#"
+          <a href="{% url 'courses:course_trainer' %}"
              class="inline-flex justify-center px-4 py-2 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300">
             ยกเลิก
           </a>
@@ -186,23 +244,29 @@
       </div>
     </div>
   </form>
-</main>
+</div>
 
-{# ===== แม่แบบ empty_form สำหรับเพิ่มรอบด้วย JS (ต้องอยู่หลังฟอร์ม) ===== #}
+{# ===== empty_form สำหรับ JS ตอนเพิ่มรอบสอนใหม่ ===== #}
 <script type="text/template" id="rounds-empty-form">
   <div class="round-item grid grid-cols-1 md:grid-cols-4 gap-4 items-start bg-slate-50 rounded-xl p-4 ring-1 ring-slate-200">
     <div class="md:col-span-2">
-      <div class="block text-sm font-medium text-slate-700 mb-1">{{ round_formset.empty_form.days.label }}</div>
+      <div class="block text-sm font-medium text-slate-700 mb-1">
+        {{ round_formset.empty_form.days.label }}
+      </div>
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
         {{ round_formset.empty_form.days }}
       </div>
     </div>
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">{{ round_formset.empty_form.start_time.label }}</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1">
+        {{ round_formset.empty_form.start_time.label }}
+      </label>
       {{ round_formset.empty_form.start_time }}
     </div>
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1">{{ round_formset.empty_form.end_time.label }}</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1">
+        {{ round_formset.empty_form.end_time.label }}
+      </label>
       {{ round_formset.empty_form.end_time }}
     </div>
     {% for hf in round_formset.empty_form.hidden_fields %}{{ hf }}{% endfor %}
@@ -216,7 +280,7 @@
 </script>
 
 <script>
-  // เพิ่ม-ลบรอบสอนแบบ dynamic ด้วย empty_form ของ Django (prefix="rounds")
+  // เพิ่ม-ลบรอบสอนแบบ dynamic ด้วย empty_form ของ Django
   document.addEventListener('DOMContentLoaded', () => {
     const container    = document.getElementById('rounds-forms');
     const addBtn       = document.getElementById('add-round');
@@ -233,12 +297,13 @@
           const deleteBox = card.querySelector('input[name$="-DELETE"]');
 
           if (deleteBox) {
-            // ฟอร์มที่มีอยู่จริง -> ใช้ DELETE แล้วซ่อน
+            // ฟอร์มที่มีอยู่จริง -> ติ๊ก DELETE แล้วซ่อน
             deleteBox.checked = true;
             card.style.display = 'none';
             return;
           }
-          // ฟอร์มใหม่ -> ลบ DOM แล้ว reindex
+
+          // ฟอร์มที่เพิ่งเพิ่มใหม่ -> ลบทิ้ง & reindex
           card.remove();
           reindexNewForms();
         });
@@ -255,7 +320,9 @@
       cards.forEach(card => {
         card.querySelectorAll('input,select,textarea,label').forEach(el => {
           ['name','id','for'].forEach(attr => {
-            if (el[attr]) el[attr] = el[attr].replace(/rounds-(\d+)-/g, `rounds-${nextIdx}-`);
+            if (el[attr]) {
+              el[attr] = el[attr].replace(/rounds-(\d+)-/g, `rounds-${nextIdx}-`);
+            }
           });
         });
         nextIdx += 1;

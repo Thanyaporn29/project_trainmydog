@@ -1,0 +1,151 @@
+{# trainmydog/templates/course_detail.html #}
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-50 text-slate-900{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-4 py-6 md:py-8">
+
+  <!-- ปุ่มกลับ -->
+  <div class="mb-4">
+    <a href="#"
+       onclick="event.preventDefault(); if (history.length>1) history.back(); else window.location.href='{% url 'trainmydog:home' %}';"
+       class="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-white text-slate-600 shadow-sm ring-1 ring-slate-200
+              hover:bg-slate-50 hover:text-slate-900">
+
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      กลับ
+    </a>
+  </div>
+
+  <!-- CARD หลักตรงกลาง -->
+  <div class="flex justify-center">
+    <article class="w-full max-w-3xl bg-white rounded-3xl shadow ring-1 ring-slate-200 overflow-hidden">
+
+      <!-- รูปภาพ -->
+      <div class="overflow-hidden">
+        {% if course.cover_image %}
+          <img src="{{ course.cover_image.url }}"
+               class="w-full max-h-[210px] object-cover">
+        {% else %}
+          <div class="w-full h-40 grid place-items-center bg-slate-100 text-slate-400">
+            ไม่มีรูปภาพ
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- เนื้อหาในการ์ด -->
+      <div class="px-6 py-6 sm:px-8 sm:py-7 space-y-6">
+
+        <!-- ชื่อคอร์ส + คำอธิบายสั้น -->
+        <header>
+          <h1 class="text-xl font-extrabold leading-tight tracking-tight">
+            {{ course.title }}
+          </h1>
+
+          {% if course.description %}
+            <p class="mt-2 text-sm text-slate-700 leading-relaxed">
+              {{ course.description|linebreaks }}
+            </p>
+          {% endif %}
+        </header>
+
+        <!-- กล่องข้อมูลหลัก -->
+        <section class="grid grid-cols-3 gap-4 text-sm">
+
+          <!-- ระยะเวลาฝึก -->
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 flex flex-col justify-center min-h-[74px]">
+            <div class="text-[11px] text-slate-500">ระยะเวลาฝึก</div>
+            <div class="mt-1 font-semibold text-slate-900">
+              {{ course.duration_hr }} ชม.
+            </div>
+          </div>
+
+          <!-- จำนวนสุนัขที่รับฝึก -->
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 flex flex-col justify-center min-h-[74px]">
+            <div class="text-[11px] text-slate-500">จำนวนสุนัขที่รับฝึก</div>
+            <div class="mt-1 font-semibold text-slate-900">
+              {{ course.max_dogs|default:"-" }} ตัว
+            </div>
+          </div>
+
+          <!-- ราคาคอร์ส -->
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 flex flex-col justify-center min-h-[74px]">
+            <div class="text-[11px] text-slate-500">ราคาคอร์ส</div>
+            <div class="mt-1 font-semibold text-slate-900">
+              {{ course.price|floatformat:0 }} บาท
+            </div>
+          </div>
+
+          <!-- ราคามัดจำ (แถวล่าง เริ่มคอลัมน์แรก) -->
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 flex flex-col justify-center min-h-[74px]">
+            <div class="text-[11px] text-slate-500">ราคามัดจำ</div>
+            <div class="mt-1 font-semibold text-slate-900">
+              {{ course.deposit_price|floatformat:0 }} บาท
+            </div>
+          </div>
+
+          <!-- สถานที่ฝึก (กิน 2 คอลัมน์ถัดไป) -->
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 flex flex-col justify-center min-h-[74px] col-span-2">
+            <div class="text-[11px] text-slate-500">สถานที่ฝึก</div>
+            <div class="mt-1 font-semibold text-slate-900">
+              {{ course.location|default:"-" }}
+            </div>
+          </div>
+
+        </section>
+
+        <!-- รอบที่เปิดสอน -->
+        <section class="space-y-2">
+          <h2 class="text-base font-bold">รอบที่เปิดสอน</h2>
+
+          <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-200 text-sm">
+            {% if course.rounds.all %}
+              {% for r in course.rounds.all %}
+                วันที่เปิดสอน :
+                <span class="font-medium">{{ r.display_days }}</span>
+                <span class="opacity-40">|</span>
+                เวลา :
+                <span class="font-medium">
+                  {{ r.start_time|time:"H:i" }}–{{ r.end_time|time:"H:i" }}
+                </span>
+                {% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            {% else %}
+              <span class="text-slate-500">ยังไม่มีรอบเรียน</span>
+            {% endif %}
+          </div>
+        </section>
+
+        <!-- สิ่งที่สุนัขจะได้รับ -->
+        {% if course.benefits_list %}
+          <section class="space-y-2">
+            <h2 class="text-base font-bold">สิ่งที่สุนัขจะได้รับ</h2>
+            <ul class="mt-1 space-y-1 pl-5 list-disc text-sm">
+              {% for b in course.benefits_list %}
+                <li>{{ b }}</li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endif %}
+
+        <!-- ปุ่มจอง -->
+        <footer class="pt-6 pb-4 border-t border-slate-200">
+            <div class="flex justify-end mt-4">
+            <a href="#"
+                class="rounded-xl bg-blue-600 px-6 py-2.5 text-white text-sm font-medium hover:bg-blue-500 shadow">
+              จองคอร์ส
+            </a>
+          </div>
+        </footer>
+
+      </div>
+    </article>
+  </div>
+
+</main>
+{% endblock %}

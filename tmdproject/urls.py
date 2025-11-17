@@ -9,8 +9,9 @@ urlpatterns = [
     # ระบบสมาชิก (login/register/profile)
     path('auth/', include(('base.urls', 'base'), namespace='Authen')),
 
-    # หน้าแรกและหน้าเว็บทั้งหมด
     path('', include(('trainmydog.urls', 'trainmydog'), namespace='trainmydog')),
+
+    path('courses/', include(('course.urls', 'course'), namespace='courses')),
 ]
 
 if settings.DEBUG:

@@ -17,7 +17,6 @@ INSTALLED_APPS = [
     'base',
     'trainmydog',
     'course',
-    'chat',
     'tailwind',
     'theme',                
     # 'django_browser_reload',  # (ทางเลือก) ถ้าอยาก live-reload หน้า

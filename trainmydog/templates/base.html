@@ -13,6 +13,7 @@
     .no-navbar-page footer { display: none !important; }
   </style>
 </head>
+
 <body class="min-h-screen bg-slate-100 flex flex-col {% block body_class %}{% endblock %}">
 
   {% if not hide_navbar %}
@@ -27,58 +28,75 @@
           <span class="text-lg font-extrabold tracking-tight">TRAINMYDOG</span>
         </a>
 
-        <!-- เมนูกลาง (Desktop) -->
+        <!-- เมนูด้านซ้าย -->
         <nav class="hidden md:flex items-center gap-10 text-slate-700 ml-auto mr-3">
+
           <a href="{% url 'trainmydog:home' %}"
              class="hover:text-slate-900 {% if request.resolver_match and request.resolver_match.url_name == 'home' %}text-slate-900 font-semibold{% endif %}">
             หน้าแรก
           </a>
 
-          {# ===== เมนูแตกต่างตามบทบาท ===== #}
-          {% if request.user.is_authenticated and request.user.profile.is_trainer_approved or request.user.is_authenticated and request.user.profile.role == 'trainer' %}
+          {% if request.user.is_authenticated and request.user.profile.role == 'trainer' %}
             <!-- ครูฝึก -->
             <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
             <a href="#" class="hover:text-slate-900">คำขอการจอง</a>
-            <a href="#" class="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">คอร์สของฉัน</a>
+            <a href="{% url 'courses:course_trainer' %}"
+               class="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">
+              คอร์สของฉัน
+            </a>
 
           {% elif request.user.is_authenticated %}
-            <!-- สมาชิกทั่วไป (ล็อกอินแล้ว) -->
+            <!-- สมาชิกทั่วไป -->
             <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
             <a href="#" class="hover:text-slate-900">ประวัติการจอง</a>
             <a href="#" class="hover:text-slate-900">แชท AI ช่วยแนะนำคอร์ส</a>
 
           {% else %}
-            <!-- ผู้ใช้ทั่วไป (ยังไม่เข้าสู่ระบบ) -->
+            <!-- ผู้ใช้ที่ยังไม่ล็อกอิน -->
             <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
             <a href="#" class="hover:text-slate-900">แชท AI ช่วยแนะนำคอร์ส</a>
           {% endif %}
         </nav>
 
-        <!-- เส้นแบ่งเล็ก ๆ -->
+        <!-- เส้นแบ่ง -->
         <span class="hidden md:block h-6 w-px bg-slate-200"></span>
 
-        <!-- ฝั่งขวา (Desktop): ใช้ Dropdown เหมือนเดิมทั้งสองบทบาท) -->
+        <!-- เมนูโปรไฟล์ -->
         <div class="hidden md:flex items-center gap-3">
           {% if request.user.is_authenticated %}
             <div class="relative">
+
+              <!-- ปุ่มเปิด dropdown -->
               <button id="memberMenuToggle" type="button"
                       class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"
                       aria-haspopup="true" aria-expanded="false">
+
                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 text-white">
                   {{ request.user.first_name|default:request.user.username|first|upper }}
                 </span>
                 <span class="hidden sm:inline font-medium">โปรไฟล์</span>
+
                 <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
+                  <path fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
+                        clip-rule="evenodd"/>
                 </svg>
               </button>
 
+              <!-- เมนู dropdown -->
               <div id="memberMenu"
                    class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden z-50
                           pointer-events-none opacity-0 -translate-y-2 scale-95 transition-all origin-top-right">
-                <a href="{% url 'trainmydog:apply_trainer' %}" class="block px-4 py-2 text-sm hover:bg-slate-50">
-                  ส่งคำขอเป็นครูฝึก
-                </a>
+
+                {# ❗ แสดงปุ่มส่งคำขอเป็นครูฝึกเฉพาะคนที่ยังไม่เป็นครูฝึก #}
+                {% if request.user.profile.role != 'trainer' and not request.user.profile.is_trainer_approved %}
+                  <a href="{% url 'trainmydog:apply_trainer' %}"
+                     class="block px-4 py-2 text-sm hover:bg-slate-50">
+                    ส่งคำขอเป็นครูฝึก
+                  </a>
+                {% endif %}
+
+                {# ปุ่มออกจากระบบ — ทุกคนเห็น #}
                 <form action="{% url 'Authen:logout' %}" method="post">
                   {% csrf_token %}
                   <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
@@ -87,12 +105,14 @@
                 </form>
               </div>
             </div>
+
           {% else %}
-            <!-- ผู้เยี่ยมชม -->
+            <!-- ผู้เข้าชม -->
             <a href="{% url 'Authen:login' %}"
                class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50">
               เข้าสู่ระบบ
             </a>
+
             <a href="{% url 'Authen:register' %}"
                class="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">
               สมัครสมาชิก
@@ -100,58 +120,57 @@
           {% endif %}
         </div>
 
-        <!-- ปุ่มเมนูมือถือ -->
+        <!-- เมนูมือถือ -->
         <button type="button"
                 class="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300"
-                data-nav-toggle aria-label="เปิดเมนู">
+                data-nav-toggle>
           <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/>
           </svg>
         </button>
+
       </div>
     </div>
 
     <!-- เมนูมือถือ -->
     <div class="md:hidden hidden border-t border-slate-200" id="mobile-nav">
       <div class="px-4 py-3 flex flex-col gap-2 text-slate-700">
+
         <a href="{% url 'trainmydog:home' %}" class="py-2">หน้าแรก</a>
 
-        {% if request.user.is_authenticated and request.user.profile.is_trainer_approved or request.user.is_authenticated and request.user.profile.role == 'trainer' %}
-          <!-- ครูฝึก -->
+        {% if request.user.is_authenticated and request.user.profile.role == 'trainer' %}
           <a href="#" class="py-2">คอร์สทั้งหมด</a>
           <a href="#" class="py-2">คำขอการจอง</a>
-          <a href="#" class="py-2">คอร์สของฉัน</a>
+          <a href="{% url 'courses:course_trainer' %}" class="py-2">คอร์สของฉัน</a>
 
         {% elif request.user.is_authenticated %}
-          <!-- สมาชิกทั่วไป -->
           <a href="#" class="py-2">คอร์สทั้งหมด</a>
           <a href="#" class="py-2">ประวัติการจอง</a>
           <a href="#" class="py-2">แชท AI ช่วยแนะนำคอร์ส</a>
 
         {% else %}
-          <!-- ผู้ใช้ทั่วไป (ยังไม่เข้าสู่ระบบ) -->
           <a href="#" class="py-2">คอร์สทั้งหมด</a>
           <a href="#" class="py-2">แชท AI ช่วยแนะนำคอร์ส</a>
         {% endif %}
 
-        {% if request.user.is_authenticated %}
-          <div class="h-px bg-slate-200 my-2"></div>
+        <div class="h-px bg-slate-200 my-2"></div>
+
+        {% if request.user.is_authenticated and request.user.profile.role != 'trainer' %}
           <a href="{% url 'trainmydog:apply_trainer' %}" class="py-2">ส่งคำขอเป็นครูฝึก</a>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
           <form action="{% url 'Authen:logout' %}" method="post" class="py-1">
             {% csrf_token %}
             <button class="text-left w-full text-red-600">ออกจากระบบ</button>
           </form>
-        {% else %}
-          <div class="h-px bg-slate-200 my-2"></div>
-          <a href="{% url 'Authen:login' %}" class="py-2">เข้าสู่ระบบ</a>
-          <a href="{% url 'Authen:register' %}" class="py-2">สมัครสมาชิก</a>
         {% endif %}
       </div>
     </div>
   </header>
   {% endif %}
 
-  <!-- เนื้อหาแต่ละหน้า -->
+  <!-- CONTENT -->
   <main class="{% block main_class %}flex-1{% endblock %}">
     {% block content %}{% endblock %}
   </main>
@@ -162,15 +181,13 @@
   </footer>
   {% endif %}
 
-  <!-- Script เล็ก ๆ -->
+  <!-- SCRIPT -->
   <script>
     (function () {
-      // Mobile nav toggle
       const btn = document.querySelector('[data-nav-toggle]');
       const panel = document.getElementById('mobile-nav');
       if (btn && panel) btn.addEventListener('click', () => panel.classList.toggle('hidden'));
 
-      // Dropdown
       const toggle = document.getElementById('memberMenuToggle');
       const menu = document.getElementById('memberMenu');
       if (toggle && menu) {

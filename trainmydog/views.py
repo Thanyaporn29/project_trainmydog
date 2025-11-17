@@ -1,40 +1,54 @@
 # trainmydog/views.py
-# from django.shortcuts import render
-# ถ้าจะใช้คอร์สจริงในภายหลัง ค่อยเปิด import เหล่านี้
-# from .models import Course
-# from base.models import Profile
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views.decorators.http import require_POST
+
+from course.models import Course          # ✅ โมเดลคอร์ส (app: course)
+from base.models import Profile           # ✅ โมเดล Profile (ใช้ role = TRAINER)
 
 from .models import TrainerApplication, TrainerCertificate
-from .forms import (
-    TrainerApplicationForm
-)
+from .forms import TrainerApplicationForm
 
 
 def home_view(request):
     """
-    หน้าแรก (Landing/Home) — ตอนนี้ยังไม่ดึงคอร์สจริง
-    ถ้าพร้อมแล้วค่อยเอา query ส่วนล่างออกจากคอมเมนต์
+    หน้าแรก (Landing/Home)
+    แสดง Hero + รายการคอร์สที่ 'เผยแพร่แล้ว' จากครูฝึก
     """
-    # TODO: เปิดใช้เมื่อทำโมเดลและข้อมูลคอร์สเรียบร้อย
-    # courses = (
-    #     Course.objects
-    #     .filter(
-    #         is_published=True,
-    #         trainer__profile__role=Profile.Role.TRAINER
-    #     )
-    #     .select_related('trainer', 'trainer__profile')
-    #     .order_by('-created_at')
-    # )
 
-    courses = []  # ชั่วคราว: ให้หน้าแสดง layout ได้โดยไม่ error
+    # ดึงเฉพาะคอร์สที่เผยแพร่ และเจ้าของเป็น TRAINER
+    courses = (
+        Course.objects
+        .filter(
+            is_published=True,
+            trainer__profile__role=Profile.Role.TRAINER
+        )
+        .select_related('trainer', 'trainer__profile')
+        .order_by('-created_at')  # เอาคอร์สที่สร้างล่าสุดขึ้นก่อน
+    )
 
     return render(request, 'home.html', {'courses': courses})
 
+
+def course_detail_view(request, pk):
+    """
+    ดูรายละเอียดคอร์ส (หน้า public สำหรับผู้ใช้ทั่วไป)
+    ใช้ template: trainmydog/templates/course_detail.html
+    """
+
+    course = get_object_or_404(
+        Course.objects.select_related('trainer', 'trainer__profile'),
+        pk=pk,
+        is_published=True,
+        trainer__profile__role=Profile.Role.TRAINER,
+    )
+
+    # ✅ ตรงนี้ใช้ชื่อไฟล์ให้ตรงกับที่คุณบอกว่าอยู่ที่:
+    # trainmydog/templates/course_detail.html
+    return render(request, 'course_detail.html', {
+        'course': course,
+    })
 
 
 @login_required
@@ -46,7 +60,7 @@ def apply_trainer_view(request):
     if latest:
         if latest.status == TrainerApplication.Status.PENDING:
             block_resubmit = True
-            block_message = "คุณมีคำร้องที่รอดำเนินการอยู่ จึงไม่สามารถส่งคำร้องอีกได้"
+            block_message = "คุณมีคำร้องที่รอดดำเนินการอยู่ จึงไม่สามารถส่งคำร้องอีกได้"
         elif latest.status == TrainerApplication.Status.APPROVED:
             block_resubmit = True
             block_message = "คุณได้รับการอนุมัติแล้ว ไม่สามารถส่งคำร้องใหม่ได้"

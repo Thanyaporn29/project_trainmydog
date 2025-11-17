@@ -1,15 +1,14 @@
+# courses/urls.py
 from django.urls import path
 from . import views
 
 app_name = "courses"
 
 urlpatterns = [
-    # สาธารณะ
+    path("trainer/", views.course_trainer, name="course_trainer"),
+    path("trainer/create/", views.create_course, name="create_course"),
+    path("trainer/<int:pk>/edit/", views.update_course, name="update_course"),
+    path("trainer/<int:pk>/delete/", views.delete_course, name="delete_course"),
+    
     path("<int:pk>/", views.course_detail, name="course_detail"),
-
-    # สำหรับครูฝึก
-    path("trainer/", views.trainer_course_list, name="trainer_course_list"),
-    path("trainer/create/", views.trainer_course_create, name="trainer_course_create"),
-    path("trainer/<int:pk>/edit/", views.trainer_course_update, name="trainer_course_update"),
-    path("trainer/<int:pk>/delete/", views.trainer_course_delete, name="trainer_course_delete"),
 ]

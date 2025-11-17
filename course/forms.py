@@ -2,7 +2,7 @@ from django import forms
 from django.forms import inlineformset_factory
 from .models import Course, CourseRound
 
-class CourseForm(forms.ModelForm):
+class CourseForm(forms.ModelForm): 
     class Meta:
         model = Course
         fields = [
