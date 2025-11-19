@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block title %}{{ course.title }} • Train My Dog{% endblock %}
-{# แก้ตรงนี้: เปลี่ยน bg-slate-50 -> bg-slate-100 ให้พื้นหลังเหมือนหน้าอื่น #}
+{# พื้นหลังให้เหมือนหน้าอื่น #}
 {% block main_class %}flex-1 bg-slate-100 text-slate-900{% endblock %}
 
 {% block content %}
@@ -86,7 +86,7 @@
                         flex flex-col justify-center h-24">
               <div class="text-[11px] text-slate-500">ราคาคอร์ส</div>
               <div class="mt-1 font-semibold text-slate-900">
-                {{ course.price|floatformat:0 }} บาท
+                {{ course.price|floatformat:2 }} บาท
               </div>
             </div>
 
@@ -94,7 +94,7 @@
                         flex flex-col justify-center h-24">
               <div class="text-[11px] text-slate-500">ราคามัดจำ</div>
               <div class="mt-1 font-semibold text-slate-900">
-                {{ course.deposit_price|floatformat:0 }} บาท
+                {{ course.deposit_price|floatformat:2 }} บาท
               </div>
             </div>
 
@@ -147,15 +147,17 @@
           </section>
         {% endif %}
 
-        <!-- ปุ่มจองคอร์ส -->
-        <footer class="pt-8 pb-4 border-t border-slate-200">
-          <div class="flex justify-end mt-2">
-            <a href="#"
-               class="rounded-xl bg-blue-600 px-6 py-3 text-white text-sm font-medium hover:bg-blue-500 shadow">
-              จองคอร์ส
-            </a>
-          </div>
-        </footer>
+        {# ปุ่มจองคอร์ส: แสดงเฉพาะคนที่ไม่ใช่ครูฝึก #}
+        {% if not request.user.is_authenticated or request.user.profile.role != 'trainer' %}
+          <footer class="pt-10 pb-8 border-t border-slate-200">
+            <div class="flex justify-end mt-4">
+              <a href="#"
+                 class="rounded-xl bg-blue-600 px-6 py-3 text-white text-base font-medium hover:bg-blue-500 shadow">
+                จองคอร์ส
+              </a>
+            </div>
+          </footer>
+        {% endif %}
 
       </div>
     </article>
