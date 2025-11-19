@@ -61,45 +61,57 @@
         <!-- เส้นแบ่ง -->
         <span class="hidden md:block h-6 w-px bg-slate-200"></span>
 
-        <!-- เมนูโปรไฟล์ -->
+        <!-- เมนูโปรไฟล์ (เดสก์ท็อป) -->
         <div class="hidden md:flex items-center gap-3">
           {% if request.user.is_authenticated %}
-            <div class="relative">
 
-              <!-- ปุ่มเปิด dropdown -->
-              <button id="memberMenuToggle" type="button"
-                      class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-300 hover:bg-slate-50"
-                      aria-haspopup="true" aria-expanded="false">
+            <div class="relative flex items-center gap-1">
+              <!-- คลิกรูป/ชื่อ เพื่อไปหน้าโปรไฟล์ -->
+              <a href="{% url 'Authen:profile' %}"
+                 class="flex items-center gap-2 font-medium rounded-full px-2 py-1 hover:bg-slate-50">
+                {% if request.user.profile.avatar %}
+                  <img src="{{ request.user.profile.avatar.url }}"
+                       alt="avatar"
+                       class="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200">
+                {% else %}
+                  <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 text-white text-sm">
+                    {{ request.user.first_name|default:request.user.username|first|upper }}
+                  </span>
+                {% endif %}
+                <span class="hidden sm:inline">โปรไฟล์</span>
+              </a>
 
-                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 text-white">
-                  {{ request.user.first_name|default:request.user.username|first|upper }}
-                </span>
-                <span class="hidden sm:inline font-medium">โปรไฟล์</span>
-
-                <svg class="w-4 h-4 opacity-70" viewBox="0 0 20 20" fill="currentColor">
+              <!-- ปุ่มลูกศรเปิดเมนู -->
+              <button id="profileMenuToggle"
+                      type="button"
+                      aria-expanded="false"
+                      aria-controls="profileMenu"
+                      aria-label="เปิดเมนูบัญชี"
+                      class="ml-1 p-2 rounded-full hover:bg-slate-100 focus:outline-none focus:ring-0">
+                <svg class="w-4 h-4 opacity-80" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd"
                         d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-                        clip-rule="evenodd"/>
+                        clip-rule="evenodd" />
                 </svg>
               </button>
 
-              <!-- เมนู dropdown -->
-              <div id="memberMenu"
-                   class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-slate-200 bg-white shadow-lg overflow-hidden z-50
-                          pointer-events-none opacity-0 -translate-y-2 scale-95 transition-all origin-top-right">
+              <!-- Dropdown -->
+              <div id="profileMenu"
+                   class="absolute right-0 top-full mt-3 min-w-max rounded-xl border border-slate-200 bg-white shadow-lg
+                          overflow-hidden z-50 pointer-events-none opacity-0 -translate-y-2 scale-95
+                          transition-all duration-200 ease-out origin-top-right">
 
-                {# ❗ แสดงปุ่มส่งคำขอเป็นครูฝึกเฉพาะคนที่ยังไม่เป็นครูฝึก #}
-                {% if request.user.profile.role != 'trainer' and not request.user.profile.is_trainer_approved %}
+                {% if request.user.profile.role != 'trainer' %}
                   <a href="{% url 'trainmydog:apply_trainer' %}"
-                     class="block px-4 py-2 text-sm hover:bg-slate-50">
+                     class="block px-3 py-2 text-sm leading-tight hover:bg-slate-50 whitespace-nowrap">
                     ส่งคำขอเป็นครูฝึก
                   </a>
                 {% endif %}
 
-                {# ปุ่มออกจากระบบ — ทุกคนเห็น #}
                 <form action="{% url 'Authen:logout' %}" method="post">
                   {% csrf_token %}
-                  <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                  <button
+                    class="block w-full text-left px-3 py-2 text-sm leading-tight text-red-600 hover:bg-red-50">
                     ออกจากระบบ
                   </button>
                 </form>
@@ -155,11 +167,14 @@
 
         <div class="h-px bg-slate-200 my-2"></div>
 
-        {% if request.user.is_authenticated and request.user.profile.role != 'trainer' %}
-          <a href="{% url 'trainmydog:apply_trainer' %}" class="py-2">ส่งคำขอเป็นครูฝึก</a>
-        {% endif %}
-
         {% if request.user.is_authenticated %}
+          <!-- ลิงก์ไปหน้าโปรไฟล์ในมือถือ -->
+          <a href="{% url 'Authen:profile' %}" class="py-2">โปรไฟล์ของฉัน</a>
+
+          {% if request.user.profile.role != 'trainer' %}
+            <a href="{% url 'trainmydog:apply_trainer' %}" class="py-2">ส่งคำขอเป็นครูฝึก</a>
+          {% endif %}
+
           <form action="{% url 'Authen:logout' %}" method="post" class="py-1">
             {% csrf_token %}
             <button class="text-left w-full text-red-600">ออกจากระบบ</button>
@@ -176,36 +191,54 @@
   </main>
 
   {% if not hide_navbar %}
-  <footer class="py-6 text-center text-slate-500 text-sm border-t border-slate-200">
+  <footer class="py-6 text-center text-slate-500 text-sm border-t border-slate-200 bg-slate-100">
     © {% now "Y" %} Train My Dog. All rights reserved.
   </footer>
   {% endif %}
 
   <!-- SCRIPT -->
   <script>
+    // toggle mobile nav
     (function () {
       const btn = document.querySelector('[data-nav-toggle]');
       const panel = document.getElementById('mobile-nav');
-      if (btn && panel) btn.addEventListener('click', () => panel.classList.toggle('hidden'));
-
-      const toggle = document.getElementById('memberMenuToggle');
-      const menu = document.getElementById('memberMenu');
-      if (toggle && menu) {
-        let open = false;
-        const show = () => {
-          menu.classList.remove('pointer-events-none','opacity-0','-translate-y-2','scale-95');
-          menu.classList.add('pointer-events-auto','opacity-100','translate-y-0','scale-100');
-          toggle.setAttribute('aria-expanded','true'); open = true;
-        };
-        const hide = () => {
-          menu.classList.add('pointer-events-none','opacity-0','-translate-y-2','scale-95');
-          menu.classList.remove('pointer-events-auto','opacity-100','translate-y-0','scale-100');
-          toggle.setAttribute('aria-expanded','false'); open = false;
-        };
-        toggle.addEventListener('click', (e) => { e.stopPropagation(); open ? hide() : show(); });
-        document.addEventListener('click', (e) => { if (open && !menu.contains(e.target) && e.target !== toggle) hide(); });
-        document.addEventListener('keydown', (e) => { if (open && e.key === 'Escape') hide(); });
+      if (btn && panel) {
+        btn.addEventListener('click', () => {
+          panel.classList.toggle('hidden');
+        });
       }
+    })();
+
+    // toggle profile dropdown (desktop)
+    (function () {
+      const toggleBtn = document.getElementById('profileMenuToggle');
+      const menu = document.getElementById('profileMenu');
+      if (!toggleBtn || !menu) return;
+
+      const open = () => {
+        menu.classList.remove('pointer-events-none','opacity-0','-translate-y-2','scale-95');
+        menu.classList.add('pointer-events-auto','opacity-100','translate-y-0','scale-100');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      };
+      const close = () => {
+        menu.classList.add('pointer-events-none','opacity-0','-translate-y-2','scale-95');
+        menu.classList.remove('pointer-events-auto','opacity-100','translate-y-0','scale-100');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      };
+
+      let isOpen = false;
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isOpen ? close() : open();
+        isOpen = !isOpen;
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!isOpen) return;
+        if (!menu.contains(e.target) && e.target !== toggleBtn) {
+          close(); isOpen = false;
+        }
+      });
     })();
   </script>
 

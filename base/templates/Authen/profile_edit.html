@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}แก้ไขโปรไฟล์ • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-100{% endblock %}
+
+{% block content %}
+
+<main class="max-w-3xl mx-auto px-4 pb-20 pt-8 md:pt-12">
+  <form method="post" enctype="multipart/form-data"
+        class="mt-3 md:mt-2 bg-white/95 backdrop-blur rounded-3xl shadow-xl ring-1 ring-black/5">
+    {% csrf_token %}
+
+    <!-- Header row -->
+    <div class="flex items-start justify-between px-6 md:px-8 pt-6">
+      <div>
+        <h2 class="text-xl font-semibold">แก้ไขโปรไฟล์</h2>
+        <p class="text-slate-500 text-sm">ข้อมูลทั่วไปและการตั้งค่าบัญชีผู้ใช้งาน</p>
+      </div>
+      <a href="{% url 'Authen:profile' %}"
+         class="inline-flex items-center gap-1.5 text-slate-700 hover:text-slate-900 underline underline-offset-4 decoration-slate-400 hover:decoration-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 rounded-md">
+        <span>กลับหน้าโปรไฟล์</span>
+      </a>
+    </div>
+
+    <!-- Avatar + ชื่อ -->
+    <div class="px-6 md:px-8 pt-6">
+      <div class="flex items-center gap-5">
+        <div class="relative">
+          <div class="w-24 h-24 md:w-28 md:h-28 rounded-full ring-4 ring-white shadow overflow-hidden bg-slate-200">
+            {% if pform.instance.avatar %}
+              <img id="avatarPreview" src="{{ pform.instance.avatar.url }}" class="w-full h-full object-cover" alt="avatar">
+            {% else %}
+              <img id="avatarPreview" src="" class="hidden w-full h-full object-cover" alt="avatar">
+              <div id="avatarPlaceholder" class="w-full h-full flex items-center justify-center text-4xl">
+                {{ request.user.first_name|default:request.user.username|first|upper }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="min-w-0">
+          <div class="text-2xl font-bold truncate">
+            {{ uform.first_name.value|default:user.get_full_name }} {{ uform.last_name.value }}
+          </div>
+          <div class="text-slate-500 truncate">
+            {{ uform.email.value|default:user.email }}
+          </div>
+
+          <!-- ปุ่มลบรูปโปรไฟล์ -->
+          <div class="mt-2">
+            <button type="submit" name="delete_avatar" value="1"
+              class="inline-flex items-center text-sm bg-red-600 hover:bg-red-700 text-white font-medium px-3 py-1.5 rounded-lg">
+              ลบรูปโปรไฟล์
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ฟอร์มแก้ไข -->
+    <div class="px-6 md:px-8 pt-6">
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Firstname</label>
+          {{ uform.first_name }}
+          {% for e in uform.first_name.errors %}<p class="text-red-600 text-sm mt-1">{{ e }}</p>{% endfor %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Lastname</label>
+          {{ uform.last_name }}
+          {% for e in uform.last_name.errors %}<p class="text-red-600 text-sm mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-slate-600 mb-1">Email</label>
+          {{ uform.email }}
+          {% for e in uform.email.errors %}<p class="text-red-600 text-sm mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">Phone number</label>
+          {{ pform.phone }}
+          {% for e in pform.phone.errors %}<p class="text-red-600 text-sm mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">รูปโปรไฟล์</label>
+          {{ pform.avatar }}
+          {% for e in pform.avatar.errors %}<p class="text-red-600 text-sm mt-1">{{ e }}</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Action bar ล่างขวา -->
+    <div class="flex justify-end px-6 md:px-8 mt-8 pb-6">
+      <button type="submit"
+              class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow">
+        บันทึกการแก้ไข
+      </button>
+    </div>
+  </form>
+
+  <!-- Base styling เฉพาะ widget มาตรฐาน (กันธีมเพี้ยน) -->
+  <style>
+    input[type="text"], input[type="email"], input[type="password"], textarea, input[type="file"] {
+      width: 100%;
+      border: 1px solid rgb(226 232 240);
+      border-radius: 0.75rem; /* xl */
+      padding: 0.6rem 0.75rem;
+      background: white;
+    }
+    textarea { min-height: 96px; }
+  </style>
+
+  <!-- Preview avatar on file select -->
+  <script>
+    const fileInput = document.getElementById("id_avatar");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const [file] = e.target.files || [];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        const img = document.getElementById("avatarPreview");
+        const ph  = document.getElementById("avatarPlaceholder");
+        if (ph) ph.classList.add("hidden");
+        if (img) {
+          img.src = url;
+          img.classList.remove("hidden");
+        }
+      });
+    }
+  </script>
+</main>
+
+{% endblock %}

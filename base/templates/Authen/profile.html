@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}โปรไฟล์ของฉัน • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-100{% endblock %}
+
+{% block content %}
+
+<main class="max-w-5xl mx-auto px-4 py-10 md:py-14">
+  <section
+    class="mx-auto max-w-3xl bg-white rounded-[32px] shadow-xl ring-1 ring-slate-200
+           px-6 py-8 md:px-10 md:py-10 flex flex-col gap-8">
+
+    {# หัวการ์ด + ปุ่มแก้ไข #}
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-extrabold text-slate-900">โปรไฟล์ของฉัน</h2>
+        <p class="mt-1 text-sm text-slate-500">
+          ข้อมูลทั่วไปและการตั้งค่าบัญชีผู้ใช้งาน
+        </p>
+      </div>
+
+      <a href="{% url 'Authen:profile_edit' %}"
+         class="inline-flex items-center gap-2 rounded-full bg-amber-400 px-5 py-2.5
+                text-sm font-semibold text-slate-900 shadow hover:bg-amber-300">
+        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M13.586 3.586a2 2 0 112.828 2.828l-8.95 8.95a2 2 0 01-.878.517l-3.07.82a.5.5 0 01-.608-.608l.82-3.07a2 2 0 01.517-.878l8.95-8.95z" />
+        </svg>
+        แก้ไขโปรไฟล์
+      </a>
+    </div>
+
+    {# ส่วนหัวโปรไฟล์: รูป + ชื่อ + อีเมล #}
+    <div class="flex items-center gap-6">
+      <div
+        class="w-24 h-24 md:w-28 md:h-28 rounded-full bg-slate-200 overflow-hidden
+               ring-4 ring-white shadow-md flex-shrink-0">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="avatar" class="w-full h-full object-cover">
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center text-4xl text-slate-600">
+            {{ user_obj.first_name|default:user_obj.username|first|upper }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="min-w-0">
+        <div class="text-2xl md:text-[26px] font-bold text-slate-900 truncate">
+          {{ user_obj.first_name|default:"" }} {{ user_obj.last_name|default:"" }}
+        </div>
+        <div class="mt-1 text-sm text-slate-500 truncate">
+          {{ user_obj.email }}
+        </div>
+      </div>
+    </div>
+
+    {# ช่องข้อมูลแบบอ่านอย่างเดียว #}
+    <div class="space-y-5">
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">
+            Firstname
+          </label>
+          <input type="text" value="{{ user_obj.first_name }}" disabled
+                 class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3
+                        text-sm text-slate-900 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-600 mb-1">
+            Lastname
+          </label>
+          <input type="text" value="{{ user_obj.last_name }}" disabled
+                 class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3
+                        text-sm text-slate-900 focus:outline-none">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1">
+          Email
+        </label>
+        <input type="text" value="{{ user_obj.email }}" disabled
+               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3
+                      text-sm text-slate-900 focus:outline-none">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-600 mb-1">
+          Phone number
+        </label>
+        <input type="text" value="{{ profile.phone }}" disabled
+               class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3
+                      text-sm text-slate-900 focus:outline-none">
+      </div>
+    </div>
+
+  </section>
+</main>
+
+{% endblock %}

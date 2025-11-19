@@ -10,7 +10,6 @@ urlpatterns = [
     path('auth/', include(('base.urls', 'base'), namespace='Authen')),
 
     path('', include(('trainmydog.urls', 'trainmydog'), namespace='trainmydog')),
-
     path('courses/', include(('course.urls', 'course'), namespace='courses')),
 ]
 
