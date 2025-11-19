@@ -28,7 +28,6 @@ class TrainerApplication(models.Model):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     email_snapshot = models.EmailField(blank=True, help_text="อีเมล ณ เวลายื่นคำร้อง")
-    # ✅ ทำให้ไม่บังคับกรอก
     intro = models.TextField(blank=True, null=True, help_text="แนะนำตัว/ประสบการณ์/เพิ่มเติมที่อยากเขียน")
     portfolio_link = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

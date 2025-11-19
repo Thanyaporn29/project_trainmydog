@@ -39,103 +39,101 @@
 </section>
 
 
-<!-- SECTION: คอร์สทั้งหมด -->
+<!-- Dynamic Courses (layout เดิม + ปรับหัวข้อให้เข้มขึ้น) -->
 <section id="courses-section" class="py-10 bg-slate-100">
   <div class="max-w-7xl mx-auto px-4">
-
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4">
       <h3 class="text-xl md:text-2xl font-bold">คอร์สทั้งหมด</h3>
       <span class="text-sm text-slate-500">
         {% if courses %}พบ {{ courses|length }} คอร์ส{% else %}พบ 0 คอร์ส{% endif %}
       </span>
     </div>
 
-    {% if courses %}
+    <!-- Grid เดิม -->
+    <div class="grid gap-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+      {% for c in courses %}
+        <article class="bg-white rounded-2xl shadow ring-1 ring-slate-200 overflow-hidden flex flex-col">
+          {% if c.cover_image %}
+            <img src="{{ c.cover_image.url }}" alt="{{ c.title }}" class="h-44 w-full object-cover">
+          {% else %}
+            <div class="h-44 w-full bg-slate-200 grid place-items-center text-slate-500">
+              ไม่มีภาพ
+            </div>
+          {% endif %}
 
-      <!-- การ์ดคอร์สแบบเล็ก + ชิดซ้าย -->
-      <div class="space-y-6">
-        {% for c in courses %}
-          <article class="w-full max-w-sm bg-white rounded-3xl shadow ring-1 ring-slate-200 overflow-hidden">
+          <!-- เนื้อหาการ์ด -->
+          <div class="p-5 flex-1 flex flex-col gap-3">
 
-            <!-- รูปคอร์สด้านบน -->
-            {% if c.cover_image %}
-              <img src="{{ c.cover_image.url }}"
-                   alt="{{ c.title }}"
-                   class="w-full h-48 object-cover">
-            {% else %}
-              <div class="w-full h-48 bg-slate-200 grid place-items-center text-slate-500">
-                ไม่มีภาพ
+            <!-- ชื่อคอร์ส -->
+            <h4 class="font-semibold text-slate-900 line-clamp-2">{{ c.title }}</h4>
+
+            <!-- คำอธิบาย -->
+            <p class="mt-1 text-sm text-slate-600 line-clamp-2">
+              {{ c.description }}
+            </p>
+
+            <!-- ข้อมูลคอร์ส -->
+            <div class="mt-3 text-sm text-slate-600 space-y-1">
+              <div>
+                <span class="font-semibold text-slate-900">ชั่วโมงฝึกรวม:</span>
+                {{ c.duration_hr }} ชม.
               </div>
-            {% endif %}
+              {% if c.location %}
+                <div class="truncate" title="{{ c.location }}">
+                  <span class="font-semibold text-slate-900">สถานที่:</span>
+                  {{ c.location }}
+                </div>
+              {% endif %}
+            </div>
 
-            <!-- เนื้อหาคอร์ส -->
-            <div class="p-5 md:p-6 flex flex-col gap-3">
-              <h4 class="font-semibold text-lg">
-                {{ c.title }}
-              </h4>
+            <!-- ราคา + ลิงก์ -->
+            <div class="flex items-center justify-between pt-1">
+              <div class="text-emerald-800 font-semibold">
+                <span class="text-slate-900 font-bold">ราคาคอร์ส :</span>
+                {{ c.price|floatformat:"2g" }} บาท
+              </div>
+              <a href="{% url 'trainmydog:course_detail' c.pk %}"
+                 class="inline-flex items-center gap-1 text-indigo-700 hover:text-indigo-500">
+                รายละเอียด
+                <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                        d="M3 10a.75.75 0 0 1 .75-.75h9.69l-3.22-3.22a.75.75 0 1 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H3.75A.75.75 0 0 1 3 10Z"
+                        clip-rule="evenodd"/>
+                </svg>
+              </a>
+            </div>
 
-              {% if c.description %}
-                <p class="text-sm text-slate-700">
-                  {{ c.description }}
-                </p>
+            <!-- โปรไฟล์ครูฝึก -->
+            <div class="mt-auto pt-4 border-t border-slate-200 flex items-center gap-2">
+
+              {% if c.trainer.profile.avatar %}
+                <img src="{{ c.trainer.profile.avatar.url }}"
+                     class="w-8 h-8 rounded-full object-cover"
+                     alt="trainer">
+              {% else %}
+                <div class="w-8 h-8 rounded-full bg-slate-300 grid place-items-center text-white">
+                  {{ c.trainer.first_name|default:c.trainer.username|first|upper }}
+                </div>
               {% endif %}
 
-              <div class="text-sm text-slate-600 space-y-1">
-                <div>
-                  ชั่วโมงฝึกรวม : {{ c.duration_hr }} ชม.
+              <div class="text-sm">
+                <div class="font-semibold text-slate-900 leading-none">
+                  {{ c.trainer.first_name }} {{ c.trainer.last_name }}
                 </div>
-                {% if c.location %}
-                  <div class="truncate" title="{{ c.location }}">
-                    สถานที่ : {{ c.location }}
-                  </div>
-                {% endif %}
-              </div>
-
-              <!-- ราคา + ปุ่มรายละเอียด -->
-              <div class="mt-2 flex items-center justify-between text-sm">
-                <div class="text-emerald-700 font-semibold">
-                  ราคาคอร์ส : {{ c.price|floatformat:"2g" }} บาท
-                </div>
-                <a href="{% url 'trainmydog:course_detail' c.pk %}"
-                   class="inline-flex items-center gap-1 text-indigo-700 hover:text-indigo-500 font-medium">
-                  รายละเอียด
-                  <span aria-hidden="true">→</span>
-                </a>
-              </div>
-
-              <!-- เส้นคั่น + โปรไฟล์ครูฝึก -->
-              <div class="mt-3 pt-3 border-t border-slate-200 flex items-center gap-3">
-                {% if c.trainer.profile.avatar %}
-                  <img src="{{ c.trainer.profile.avatar.url }}"
-                      class="w-9 h-9 rounded-full object-cover flex-shrink-0"
-                      alt="trainer">
-                {% else %}
-                  <div class="w-9 h-9 rounded-full bg-slate-300 grid place-items-center text-white text-sm flex-shrink-0">
-                    {{ c.trainer.first_name|default:c.trainer.username|first|upper }}
-                  </div>
-                {% endif %}
-
-                <div class="leading-tight translate-y-[1px]">
-                  <div class="font-medium text-sm">
-                    {{ c.trainer.first_name }} {{ c.trainer.last_name }}
-                  </div>
-                  <div class="text-slate-500 text-xs">
-                    ครูฝึกสุนัข
-                  </div>
+                <div class="text-slate-500 leading-none mt-0.5">
+                  ครูฝึกสุนัข
                 </div>
               </div>
 
             </div>
-          </article>
-        {% endfor %}
-      </div>
-
-    {% else %}
-      <div class="mt-6 rounded-2xl bg-white ring-1 ring-slate-200 p-6 text-center text-slate-500 text-sm">
-        ยังไม่มีคอร์สที่เผยแพร่ในขณะนี้
-      </div>
-    {% endif %}
-
+          </div>
+        </article>
+      {% empty %}
+        <div class="col-span-full text-slate-500 text-center">
+          ยังไม่มีคอร์สเผยแพร่
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>
 

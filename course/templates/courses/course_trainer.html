@@ -69,37 +69,39 @@
 
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-6">
                     <div class="text-slate-700">
-                      ชั่วโมงเรียนรวม :
-                      <span class="font-medium">{{ c.duration_hr }} ชม.</span>
+                      <span class="font-semibold text-slate-900">ชั่วโมงเรียนรวม :</span>
+                      <span class="font-normal text-slate-700"> {{ c.duration_hr }} ชม.</span>
                     </div>
                     {% if c.location %}
                       <div class="text-slate-700 sm:col-span-2 whitespace-nowrap">
-                        สถานที่ฝึก :
-                        <span class="font-medium">{{ c.location }}</span>
+                        <span class="font-semibold text-slate-900">สถานที่ฝึก :</span>
+                        <span class="font-normal text-slate-700"> {{ c.location }}</span>
                       </div>
                     {% endif %}
                   </div>
 
                   {% if c.max_dogs %}
                     <div class="mt-2 text-slate-700">
-                      จำนวนสุนัขที่รับฝึก :
-                      <span class="font-medium">{{ c.max_dogs }} ตัว</span>
+                      <span class="font-semibold text-slate-900">จำนวนสุนัขที่รับฝึก :</span>
+                      <span class="font-normal text-slate-700"> {{ c.max_dogs }} ตัว</span>
                     </div>
                   {% endif %}
 
                   <div class="mt-6 space-y-1">
                     <div class="text-slate-700">
-                      ราคาคอร์ส :
+                      <span class="font-semibold text-slate-900">ราคาคอร์ส :</span>
                       <span class="font-semibold text-slate-900">
                         {{ c.price|floatformat:"2g" }}
-                      </span> บาท
+                      </span>
+                      <span class="font-normal text-slate-700"> บาท</span>
                     </div>
                     {% if c.deposit_price %}
                       <div class="text-slate-700">
-                        ราคามัดจำ :
+                        <span class="font-semibold text-slate-900">ราคามัดจำ :</span>
                         <span class="font-semibold text-slate-900">
                           {{ c.deposit_price|floatformat:"2g" }}
-                        </span> บาท
+                        </span>
+                        <span class="font-normal text-slate-700"> บาท</span>
                       </div>
                     {% endif %}
                   </div>
