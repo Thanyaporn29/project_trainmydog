@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}รายละเอียดการจอง • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-100{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-4 pb-20 pt-6">  
+
+  <!-- ปุ่มย้อนกลับ -->
+  <div class="mb-6">
+    <a href="{% url 'trainmydog:booking_history' %}"
+       class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm text-slate-600 ring-1 ring-slate-200
+              hover:text-slate-900 hover:bg-slate-50 transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      ย้อนกลับ
+    </a>
+  </div>
+
+  <!-- กล่องรายละเอียด -->
+  <article class="bg-white rounded-3xl shadow-md ring-1 ring-slate-200/70 
+                  px-6 sm:px-8 py-8 space-y-10 mb-12">
+
+    <!-- หัวข้อใหญ่ -->
+    <section>
+      <h1 class="text-2xl font-bold text-slate-900 mb-3">รายละเอียดการจองคอร์ส</h1>
+
+      <p class="text-sm text-slate-700">
+        <span class="font-semibold text-slate-900">คอร์ส :</span> {{ booking.course.title }}
+      </p>
+
+      <div class="mt-3 flex flex-wrap items-center gap-3 text-sm">
+        <p class="text-slate-500">
+          <span class="font-medium text-slate-700">จองเมื่อ :</span>
+          {{ booking.created_at|date:"d/m/Y H:i" }}
+        </p>
+
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+          {% if booking.status == 'pending' %} bg-amber-100 text-amber-800
+          {% elif booking.status == 'approved' %} bg-emerald-100 text-emerald-800
+          {% elif booking.status == 'rejected' %} bg-rose-100 text-rose-800
+          {% elif booking.status == 'canceled' %} bg-slate-100 text-slate-700
+          {% endif %}">
+          {% if booking.status == 'pending' %}รอดำเนินการ
+          {% elif booking.status == 'approved' %}อนุมัติแล้ว
+          {% elif booking.status == 'rejected' %}ถูกปฏิเสธ
+          {% elif booking.status == 'canceled' %}ยกเลิกแล้ว
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- เส้นกั้น ขยับลงอย่างเดียว -->
+      <div class="border-b border-slate-200 mt-6"></div>
+    </section>
+
+    <!-- ข้อมูลคอร์ส -->
+    <section>
+      <h2 class="text-lg font-semibold text-slate-900 mb-3">ข้อมูลคอร์ส</h2>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div>
+          <dt class="font-semibold text-slate-700">ผู้สอน</dt>
+          <dd class="text-slate-700">
+            {{ booking.course.trainer.get_full_name|default:booking.course.trainer.username }}
+          </dd>
+        </div>
+
+        {% if booking.course.location %}
+        <div>
+          <dt class="font-semibold text-slate-700">สถานที่ฝึก</dt>
+          <dd class="text-slate-700">{{ booking.course.location }}</dd>
+        </div>
+        {% endif %}
+
+        {% if booking.round %}
+        <div class="sm:col-span-2">
+          <dt class="font-semibold text-slate-700">รอบเรียน</dt>
+          <dd class="text-slate-700">
+            {{ booking.round.display_days }}
+            {{ booking.round.start_time|time:"H:i" }} – {{ booking.round.end_time|time:"H:i" }}
+          </dd>
+        </div>
+        {% endif %}
+      </dl>
+
+      <!-- เส้นกั้น -->
+      <div class="border-b border-slate-200 mt-6"></div>
+    </section>
+
+    <!-- ข้อมูลเจ้าของ -->
+    <section>
+      <h2 class="text-lg font-semibold text-slate-900 mb-3">ข้อมูลเจ้าของสุนัข</h2>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div>
+          <dt class="font-semibold text-slate-700">ชื่อ-นามสกุล</dt>
+          <dd class="text-slate-700">{{ booking.owner_full_name }}</dd>
+        </div>
+
+        {% if booking.owner_nickname %}
+        <div>
+          <dt class="font-semibold text-slate-700">ชื่อเล่น</dt>
+          <dd class="text-slate-700">{{ booking.owner_nickname }}</dd>
+        </div>
+        {% endif %}
+
+        <div>
+          <dt class="font-semibold text-slate-700">เบอร์โทรศัพท์</dt>
+          <dd class="text-slate-700">{{ booking.owner_phone }}</dd>
+        </div>
+      </dl>
+
+      <div class="border-b border-slate-200 mt-6"></div>
+    </section>
+
+    <!-- ข้อมูลสุนัข -->
+    <section>
+      <h2 class="text-lg font-semibold text-slate-900 mb-3">ข้อมูลสุนัข</h2>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+
+        {% if booking.dog_name %}
+        <div>
+          <dt class="font-semibold text-slate-700">ชื่อสุนัข</dt>
+          <dd class="text-slate-700">{{ booking.dog_name }}</dd>
+        </div>
+        {% endif %}
+
+        <div>
+          <dt class="font-semibold text-slate-700">จำนวนสุนัข</dt>
+          <dd class="text-slate-700">{{ booking.dog_count }} ตัว</dd>
+        </div>
+
+        {% if booking.dog_gender %}
+        <div>
+          <dt class="font-semibold text-slate-700">เพศ</dt>
+          <dd class="text-slate-700">
+            {% if booking.dog_gender == 'male' %}ผู้{% elif booking.dog_gender == 'female' %}เมีย{% else %}-{% endif %}
+          </dd>
+        </div>
+        {% endif %}
+
+        <div>
+          <dt class="font-semibold text-slate-700">อายุ (ปี)</dt>
+          <dd class="text-slate-700">{{ booking.dog_age_year }}</dd>
+        </div>
+
+        {% if booking.dog_breed %}
+        <div>
+          <dt class="font-semibold text-slate-700">สายพันธุ์</dt>
+          <dd class="text-slate-700">{{ booking.dog_breed }}</dd>
+        </div>
+        {% endif %}
+      </dl>
+
+      {% if booking.message %}
+      <div class="border-b border-slate-200 mt-6"></div>
+      {% endif %}
+    </section>
+
+    <!-- ข้อความถึงครูฝึก -->
+    {% if booking.message %}
+    <section>
+      <h2 class="text-lg font-semibold text-slate-900 mb-3">ข้อความถึงครูฝึก</h2>
+      <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+        {{ booking.message }}
+      </p>
+    </section>
+    {% endif %}
+
+  </article>
+</main>
+{% endblock %}

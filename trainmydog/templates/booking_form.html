@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}จองคอร์ส • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-100{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-4 pb-16 pt-6">
+
+  <!-- ปุ่มกลับ -->
+  <div class="mb-6">
+    <a href="#" onclick="event.preventDefault(); history.back();"
+       class="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-slate-600 ring-1 ring-slate-200
+              hover:text-slate-900 hover:bg-slate-100">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      กลับ
+    </a>
+  </div>
+
+  <article class="bg-white rounded-2xl shadow ring-1 ring-slate-200 p-6 sm:p-8">
+    <h1 class="text-2xl font-bold mb-2">จองคอร์ส : {{ course.title }}</h1>
+    {% if course.location %}
+      <p class="text-slate-500 mb-2">
+        <span class="text-slate-900 font-medium">สถานที่ฝึก :</span>
+        {{ course.location }}
+      </p>
+    {% endif %}
+    <p class="text-slate-500 mb-6">
+      <span class="text-slate-900 font-medium">ผู้สอน :</span>
+      {{ course.trainer.get_full_name|default:course.trainer.username }}
+    </p>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <!-- เลือกรอบเรียน -->
+      <section class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">เลือกรอบเวลาเรียน</h2>
+
+        {% with course.rounds.all as rounds %}
+          {% if rounds %}
+            <p class="text-sm text-slate-500 mb-2">
+              เลือกรอบที่ต้องการเรียน (ถ้าคอร์สมีหลายรอบ)
+            </p>
+            <div class="rounded-xl ring-1 ring-slate-200 p-3 bg-slate-50">
+              {{ form.round }}
+              {% if form.round.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ form.round.errors.0 }}</p>
+              {% endif %}
+
+              <div class="mt-3 text-sm text-slate-600 space-y-1">
+                {% for r in rounds %}
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex px-2 py-0.5 rounded bg-slate-100 ring-1 ring-slate-200">
+                      {{ r.display_days }}
+                    </span>
+                    <span>{{ r.start_time|time:"H:i" }}–{{ r.end_time|time:"H:i" }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% else %}
+            <div class="rounded-xl bg-amber-50 text-amber-800 px-4 py-3">
+              คอร์สนี้ยังไม่เปิดรอบเรียนในขณะนี้
+            </div>
+          {% endif %}
+        {% endwith %}
+      </section>
+
+      <!-- ข้อมูลเจ้าของสุนัข -->
+      <section class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">ข้อมูลเจ้าของสุนัข</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล</label>
+            {{ form.owner_full_name }}
+            {% if form.owner_full_name.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.owner_full_name.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อเล่น</label>
+            {{ form.owner_nickname }}
+            {% if form.owner_nickname.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.owner_nickname.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">เบอร์โทรศัพท์</label>
+            {{ form.owner_phone }}
+            {% if form.owner_phone.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.owner_phone.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+      <!-- ข้อมูลสุนัข -->
+      <section class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">ข้อมูลสุนัข</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อสุนัข</label>
+            {{ form.dog_name }}
+            {% if form.dog_name.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.dog_name.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">จำนวนสุนัขที่จะฝึก</label>
+            {{ form.dog_count }}
+            {% if form.dog_count.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.dog_count.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">เพศ</label>
+            {{ form.dog_gender }}
+            {% if form.dog_gender.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.dog_gender.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700.mb-1">อายุ (ปี)</label>
+            {{ form.dog_age_year }}
+            {% if form.dog_age_year.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.dog_age_year.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">สายพันธุ์</label>
+            {{ form.dog_breed }}
+            {% if form.dog_breed.errors %}
+              <p class="text-red-600 text-sm mt-1">{{ form.dog_breed.errors.0 }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+
+      <!-- ข้อความเพิ่มเติม -->
+      <section class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">ข้อความถึงครูฝึก (ถ้ามี)</h2>
+        {{ form.message }}
+        {% if form.message.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ form.message.errors.0 }}</p>
+        {% endif %}
+      </section>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <a href="{% url 'trainmydog:home' %}"
+           class="inline-flex px-4 py-2 rounded-lg bg-slate-200 text-slate-800 hover:bg-slate-300">
+          ยกเลิก
+        </a>
+
+        {% with course.rounds.all as rounds %}
+          <button type="submit"
+                  class="inline-flex px-4 py-2 rounded-lg text-white
+                         {% if rounds %}bg-blue-600 hover:bg-blue-500{% else %}bg-blue-400 cursor-not-allowed opacity-60{% endif %}"
+                  {% if not rounds %}disabled{% endif %}>
+            ยืนยันการจอง
+          </button>
+        {% endwith %}
+      </div>
+    </form>
+  </article>
+</main>
+{% endblock %}

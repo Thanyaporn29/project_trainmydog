@@ -38,8 +38,10 @@
 
           {% if request.user.is_authenticated and request.user.profile.role == 'trainer' %}
             <!-- ครูฝึก -->
-            <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
-            <a href="#" class="hover:text-slate-900">คำขอการจอง</a>
+            <a href="{% url 'trainmydog:home' %}" class="hover:text-slate-900">คอร์สทั้งหมด</a>
+            <a href="{% url 'trainmydog:trainer_booking_list' %}" class="hover:text-slate-900">
+              คำขอการจอง
+            </a>
             <a href="{% url 'courses:course_trainer' %}"
                class="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">
               คอร์สของฉัน
@@ -47,13 +49,15 @@
 
           {% elif request.user.is_authenticated %}
             <!-- สมาชิกทั่วไป -->
-            <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
-            <a href="#" class="hover:text-slate-900">ประวัติการจอง</a>
+            <a href="{% url 'trainmydog:home' %}" class="hover:text-slate-900">คอร์สทั้งหมด</a>
+            <a href="{% url 'trainmydog:booking_history' %}" class="hover:text-slate-900">
+              ประวัติการจอง
+            </a>
             <a href="#" class="hover:text-slate-900">แชท AI ช่วยแนะนำคอร์ส</a>
 
           {% else %}
             <!-- ผู้ใช้ที่ยังไม่ล็อกอิน -->
-            <a href="#" class="hover:text-slate-900">คอร์สทั้งหมด</a>
+            <a href="{% url 'trainmydog:home' %}" class="hover:text-slate-900">คอร์สทั้งหมด</a>
             <a href="#" class="hover:text-slate-900">แชท AI ช่วยแนะนำคอร์ส</a>
           {% endif %}
         </nav>
@@ -99,11 +103,11 @@
               <div id="profileMenu"
                    class="absolute right-0 top-full mt-3 min-w-max rounded-xl border border-slate-200 bg-white shadow-lg
                           overflow-hidden z-50 pointer-events-none opacity-0 -translate-y-2 scale-95
-                          transition-all duration-200 ease-out origin-top-right">
+                          transition-all duration-200.ease-out origin-top-right">
 
                 {% if request.user.profile.role != 'trainer' %}
                   <a href="{% url 'trainmydog:apply_trainer' %}"
-                     class="block px-3 py-2 text-sm leading-tight hover:bg-slate-50 whitespace-nowrap">
+                     class="block px-3 py-2 text-sm.leading-tight hover:bg-slate-50 whitespace-nowrap">
                     ส่งคำขอเป็นครูฝึก
                   </a>
                 {% endif %}
@@ -111,7 +115,7 @@
                 <form action="{% url 'Authen:logout' %}" method="post">
                   {% csrf_token %}
                   <button
-                    class="block w-full text-left px-3 py-2 text-sm leading-tight text-red-600 hover:bg-red-50">
+                    class="block w-full text-left px-3 py-2 text-sm.leading-tight text-red-600 hover:bg-red-50">
                     ออกจากระบบ
                   </button>
                 </form>
@@ -121,12 +125,12 @@
           {% else %}
             <!-- ผู้เข้าชม -->
             <a href="{% url 'Authen:login' %}"
-               class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50">
+               class="inline-flex.items-center px-4 py-2 rounded-xl border border-slate-300 text-slate-800 hover:bg-slate-50">
               เข้าสู่ระบบ
             </a>
 
             <a href="{% url 'Authen:register' %}"
-               class="inline-flex items-center px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">
+               class="inline-flex.items-center px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500">
               สมัครสมาชิก
             </a>
           {% endif %}
@@ -134,7 +138,7 @@
 
         <!-- เมนูมือถือ -->
         <button type="button"
-                class="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300"
+                class="md:hidden ml-auto inline-flex.items-center justify-center w-10 h-10 rounded-xl border border-slate-300"
                 data-nav-toggle>
           <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/>
@@ -151,17 +155,17 @@
         <a href="{% url 'trainmydog:home' %}" class="py-2">หน้าแรก</a>
 
         {% if request.user.is_authenticated and request.user.profile.role == 'trainer' %}
-          <a href="#" class="py-2">คอร์สทั้งหมด</a>
-          <a href="#" class="py-2">คำขอการจอง</a>
+          <a href="{% url 'trainmydog:home' %}" class="py-2">คอร์สทั้งหมด</a>
+          <a href="{% url 'trainmydog:trainer_booking_list' %}" class="py-2">คำขอการจอง</a>
           <a href="{% url 'courses:course_trainer' %}" class="py-2">คอร์สของฉัน</a>
 
         {% elif request.user.is_authenticated %}
-          <a href="#" class="py-2">คอร์สทั้งหมด</a>
-          <a href="#" class="py-2">ประวัติการจอง</a>
+          <a href="{% url 'trainmydog:home' %}" class="py-2">คอร์สทั้งหมด</a>
+          <a href="{% url 'trainmydog:booking_history' %}" class="py-2">ประวัติการจอง</a>
           <a href="#" class="py-2">แชท AI ช่วยแนะนำคอร์ส</a>
 
         {% else %}
-          <a href="#" class="py-2">คอร์สทั้งหมด</a>
+          <a href="{% url 'trainmydog:home' %}" class="py-2">คอร์สทั้งหมด</a>
           <a href="#" class="py-2">แชท AI ช่วยแนะนำคอร์ส</a>
         {% endif %}
 

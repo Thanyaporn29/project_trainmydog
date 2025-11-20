@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}ประวัติการจองคอร์ส • Train My Dog{% endblock %}
+{% block main_class %}flex-1 bg-slate-100{% endblock %}
+
+{% block content %}
+<main class="max-w-6xl mx-auto px-6 pb-20 pt-10">
+  <h1 class="text-2xl font-bold mb-4">ประวัติการจองคอร์สของฉัน</h1>
+  <p class="text-slate-600 mb-6">
+    ดูสถานะการจองคอร์สฝึกสุนัขทั้งหมดที่คุณเคยจองไว้
+  </p>
+
+  {% if bookings %}
+    <div class="space-y-6">
+      {% for b in bookings %}
+        <article class="bg-white rounded-2xl shadow-md ring-1 ring-slate-200 p-6 sm:p-7 
+                        flex flex-col sm:flex-row sm:items-stretch sm:justify-between gap-6">
+
+          <!-- LEFT SIDE -->
+          <div class="space-y-1 flex-1">
+            <h2 class="font-semibold text-slate-900 text-lg">
+              {{ b.course.title }}
+            </h2>
+
+            <p class="text-sm text-slate-600">
+              ผู้สอน:
+              {{ b.course.trainer.get_full_name|default:b.course.trainer.username }}
+            </p>
+
+            <p class="text-sm text-slate-500">
+              จองเมื่อ: {{ b.created_at|date:"d/m/Y H:i" }}
+            </p>
+
+            {% if b.round %}
+              <p class="text-sm text-slate-600 pt-1">
+                รอบเรียน:
+                <span class="inline-flex px-2.5 py-1 rounded bg-slate-100 ring-1 ring-slate-200">
+                  {{ b.round.display_days }} {{ b.round.start_time|time:"H:i" }}–{{ b.round.end_time|time:"H:i" }}
+                </span>
+              </p>
+            {% endif %}
+
+            {% if b.dog_name %}
+              <p class="text-sm text-slate-600">
+                สุนัข: {{ b.dog_name }} ({{ b.dog_count }} ตัว)
+              </p>
+            {% endif %}
+          </div>
+
+          <!-- RIGHT SIDE (ตำแหน่งตรงกลางแนวตั้งทั้งคู่) -->
+          <div class="flex flex-col items-center justify-center min-w-[150px] gap-3">
+
+            <!-- STATUS -->
+            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold
+              {% if b.status == 'pending' %} bg-amber-100 text-amber-800
+              {% elif b.status == 'approved' %} bg-emerald-100 text-emerald-800
+              {% elif b.status == 'rejected' %} bg-rose-100 text-rose-800
+              {% elif b.status == 'canceled' %} bg-slate-100 text-slate-700
+              {% endif %}">
+              {% if b.status == 'pending' %}รอดำเนินการ
+              {% elif b.status == 'approved' %}อนุมัติแล้ว
+              {% elif b.status == 'rejected' %}ถูกปฏิเสธ
+              {% elif b.status == 'canceled' %}ยกเลิกแล้ว
+              {% endif %}
+            </span>
+
+            <!-- DETAIL LINK -->
+            <a href="{% url 'trainmydog:booking_detail' b.pk %}"
+               class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+              ดูรายละเอียด
+            </a>
+
+          </div>
+
+        </article>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-8 text-center text-slate-600">
+      ยังไม่มีประวัติการจองคอร์ส
+    </div>
+  {% endif %}
+</main>
+{% endblock %}
